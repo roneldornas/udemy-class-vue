@@ -1,29 +1,34 @@
-import api from '../../api/imgur';
+import api from "../../api/imgur";
+import qs from "qs";
 
 const state = {
-    token: null,
+  token: window.localStorage.getItem("imgur_token")
 };
 
 const getters = {
-    isLoggedIn: state => !!state.token,
+  isLoggedIn: state => !!state.token
 };
 
-
 const actions = {
-    logout: ({ commit }) => commit('setToken', null),
+  logout: ({ commit }) => commit("setToken", null),
 
-    login: () => api.login(),
+  login: () => api.login(),
 
-    finalizeLogin: () => {},
+  finalizeLogin: ({ commit }, hash) => {
+    const query = qs.parse(hash.replace("#", ""));
+
+    commit("setToken", query.access_token);
+    window.localStorage.setItem("imgur_token", query.access_token);
+  }
 };
 
 const mutations = {
-    setToken: (state, token) => state.token = token,
+  setToken: (state, token) => (state.token = token)
 };
 
 export default {
-    state,
-    getters,
-    actions,
-    mutations,
+  state,
+  getters,
+  actions,
+  mutations
 };
